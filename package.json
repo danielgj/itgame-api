@@ -1,0 +1,35 @@
+{
+  "name": "my-it-team-game-api",
+  "version": "0.0.1",
+  "description": "My IT Team Game (REST API)",
+  "main": "server.js",
+  "author": "daniel.garcia@es.unisys.com",
+  "engines": {
+    "node": "~4.2"
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "1.12.4",
+    "connect-busboy": "0.0.2",
+    "cron": "^1.1.0",
+    "debug": "^2.2.0",
+    "express": "4.12.3",
+    "express-jwt": "~3.0.1",
+    "http-status": "0.1.8",
+    "jade": "~1.9.2",
+    "jsonwebtoken": "~5.0.4",
+    "mongoose": "^4.5.0",
+    "node-rest-client": "^2.0.1",
+    "reformed": "^0.1.1",
+    "wagner-core": "0.1.0"
+  },
+  "devDependencies": {
+    "gulp": "3.8.11",
+    "gulp-mocha": "2.0.1",
+    "mocha": "2.2.4",
+    "superagent": "1.2.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
