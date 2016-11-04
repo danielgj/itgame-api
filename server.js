@@ -44,18 +44,31 @@ app.use(function(err, req, res, next) {
     });
 });
 
+app.use('*', function(req, res, next) {
+        
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    
+    next();
+        
+});
 
-
-app.use("/badges", express.static(path.join(__dirname, 'badges')));
+app.use("/badge", express.static(path.join(__dirname, 'public/badges')));
+app.use("/avatar", express.static(path.join(__dirname, 'public/avatars')));
+app.use("/skill", express.static(path.join(__dirname, 'public/skills')));
 
 
 //Routes
 var indexRouter = require('./routes/index')(wagner,configParams,messages);
 var userRouter = require('./routes/user')(wagner,configParams,messages);
+var avatarRouter = require('./routes/avatar')(wagner,configParams,messages);
+
 var jiraWebHookRouter = require('./routes/jira_wh')(wagner,configParams,messages);
 
 app.use(configParams.base_api_url + '/', indexRouter);
 app.use(configParams.base_api_url + '/user', userRouter);
+app.use(configParams.base_api_url + '/avatar', avatarRouter);
 app.use(configParams.base_api_url + '/jiraWH', jiraWebHookRouter);
 
 
@@ -138,5 +151,5 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }
