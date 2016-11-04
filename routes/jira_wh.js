@@ -16,7 +16,7 @@ module.exports = function(wagner, config, messages) {
         
         console.log(req.body);
         
-        res.status(500).send();
+        return res.status(200).json(req.body);
         
     });
     
