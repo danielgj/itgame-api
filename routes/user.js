@@ -26,7 +26,7 @@ module.exports = function(wagner, config, messages) {
 
             var bodyReq = req.body;     
              
-            if(!bodyReq || !_.has(bodyReq,'username') || !_.has(bodyReq,'password') || !_.has(bodyReq,'email') || !_.has(bodyReq,'role')) {
+            if(!bodyReq || !_.has(bodyReq,'username') || !_.has(bodyReq,'password') || !_.has(bodyReq,'email')) {
               return res.status(400).send({ msg: messages.bad_request_msg });
             } else {
               return User.findOne({username: bodyReq.username}, function (err, data) {
@@ -40,12 +40,13 @@ module.exports = function(wagner, config, messages) {
                             return res.status(404).json({msg: 'el usuario ya existe'});
                         } else {
 
+                            
                             return wagner.invoke(function(User) {
                                 var userToCreate = {
                                     username: bodyReq.username,
                                     password: nFunctions.createHash(bodyReq.password),
                                     email: bodyReq.email,
-                                    role: bodyReq.role
+                                    role:  !_.has(bodyReq,'role')?"player":bodyReq.role
                                 };
 
 
@@ -93,7 +94,7 @@ module.exports = function(wagner, config, messages) {
         return function(req,res) {
             
             var userR = req.user.role;
-            if (userR!='adminuser') {
+            if (userR!='admin') {
                 return res.status(401).send(messages.unauthorized_error);
             } else {
 
@@ -123,7 +124,7 @@ module.exports = function(wagner, config, messages) {
         return function(req,res) {
             
             var userR = req.user.role;
-            if (userR!='adminuser') {
+            if (userR!='admin') {
                 return res.status(401).send(messages.unauthorized_error);
             } else {
 
@@ -162,13 +163,12 @@ module.exports = function(wagner, config, messages) {
 
         var bodyReq = req.body;          
 
-        if(!bodyReq || !_.has(bodyReq,'user') || !_.has(bodyReq,'password')) {
-          return res.status(400).send({ msg: messages.bad_request_msg });
+        if(!bodyReq || !_.has(bodyReq,'email') || !_.has(bodyReq,'password')) {
+            return res.status(400).send({ msg: messages.bad_request_msg });
         } else {
 
           return User.
-           findOne({username: req.body.user}).
-           populate('applications').
+           findOne({email: req.body.email}).
            exec( function (err, data) {
 
             if(err) {
@@ -188,13 +188,15 @@ module.exports = function(wagner, config, messages) {
                                   var payload = {
                                         userid : data._id,                    
                                         username : data.username,
+                                        email: data.email,
                                         role : data.role};
 
                                   var token = jwt.sign(payload, config.jwtPassword, { expiresInMinutes: config.jwtTokenExpiresIn });
 
                                   var payloadRefresh = {
                                           userid : data._id,
-                                          username : data.username,                                          
+                                          username : data.username,  
+                                          email: data.email,
                                           role : data.role,
                                           token: token};
 
@@ -202,6 +204,9 @@ module.exports = function(wagner, config, messages) {
                                   
                                   return res.status(200).json({
                                     userid: data._id,
+                                    username : data.username,
+                                    role : data.role,
+                                    email: data.email,
                                     token: token,
                                     refresh: refresh});
 

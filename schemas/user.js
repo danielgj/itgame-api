@@ -18,7 +18,7 @@ var userSchema = {
     },
     role: {
       type: String,
-      enum: ['developer','admin']
+      enum: ['player','admin']
     }
 };
 
