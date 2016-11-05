@@ -10,10 +10,16 @@ module.exports = function(wagner, config) {
       mongoose.model('User', require('./schemas/user'), 'users');
   var Avatar =
       mongoose.model('Avatar', require('./schemas/avatar'), 'avatars');
+  var UserProfile =
+      mongoose.model('UserProfile', require('./schemas/user_profile'), 'user_profile');
+  var Skill =
+      mongoose.model('Skill', require('./schemas/skill'), 'skills');
   
   var models = {
     User: User,
-    Avatar: Avatar
+    Avatar: Avatar,
+    UserProfile: UserProfile,
+    Skill: Skill
   };
 
 

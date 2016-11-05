@@ -13,11 +13,10 @@ module.exports = function(wagner, config, messages) {
     userRouter.use(bodyparser.json());
     userRouter.use(bodyparser.urlencoded({ extended: false }));
     
-    userRouter.route('/')
-    
+    userRouter.route('/register')
     
     ////
-    // Create User
+    // Registrarion
     ////
     .post(function(req,res) {
         
@@ -29,15 +28,20 @@ module.exports = function(wagner, config, messages) {
             if(!bodyReq || !_.has(bodyReq,'username') || !_.has(bodyReq,'password') || !_.has(bodyReq,'email')) {
               return res.status(400).send({ msg: messages.bad_request_msg });
             } else {
-              return User.findOne({username: bodyReq.username}, function (err, data) {
+              /*
+              return User.find().
+                and([{ $or: [{username: bodyReq.username}, {email: bodyReq.email}] }]).
+                exec(function (err, data) {
+              */
+              return User.findOne({ $or: [{username: bodyReq.username}, {email: bodyReq.email}] }, function (err, data) {
 
                     if(err) {
-                      console.log(err);
                       return res.status(500).json({ msg: messages.internal_server_error });
                     } else {
                         if(data) {
                             //User exists
-                            return res.status(404).json({msg: 'el usuario ya existe'});
+                            console.log(JSON.stringify(data));
+                            return res.status(404).json({msg: 'El usuario ya existe'});
                         } else {
 
                             
@@ -55,7 +59,33 @@ module.exports = function(wagner, config, messages) {
                                           console.log(err);
                                           return res.status(500).json({ msg: 'Internal Server Error' });
                                     } else {
-                                          return res.status(201).json(data);
+                                        
+                                        
+                                          var payload = {
+                                                userid : data._id,                    
+                                                username : data.username,
+                                                email: data.email,
+                                                role : data.role};
+
+                                          var token = jwt.sign(payload, config.jwtPassword, { expiresInMinutes: config.jwtTokenExpiresIn });
+
+                                          var payloadRefresh = {
+                                                  userid : data._id,
+                                                  username : data.username,  
+                                                  email: data.email,
+                                                  role : data.role,
+                                                  token: token};
+
+                                          var refresh = jwt.sign(payloadRefresh, config.jwtPassword, { expiresInMinutes: config.jwtrefreshExpiresIn });
+
+                                          return res.status(201).json({
+                                            userid: data._id,
+                                            username : data.username,
+                                            role : data.role,
+                                            email: data.email,
+                                            token: token,
+                                            refresh: refresh});
+                                        
                                     }                
                                 });
                             });
@@ -68,6 +98,8 @@ module.exports = function(wagner, config, messages) {
       
       
     })
+    
+    userRouter.route('/')
 
     ////
     // Get Users
