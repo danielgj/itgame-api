@@ -21,7 +21,25 @@ module.exports = function(wagner, config, messages) {
     ////
     .post(jwtM({secret: config.jwtPassword}), function(req, res, next) {
         
-           
+           return wagner.invoke(function(User) {
+
+                var bodyReq = req.body;     
+
+                if(!bodyReq || !_.has(bodyReq,'userId')) {
+                  return res.status(400).send({ msg: messages.bad_request_msg });
+                } else {
+
+                    return wagner.invoke(function(UserProfile) {
+                            return UserProfile.create(bodyReq, function(err,data) {
+                                if(err) {
+                                    return res.status(500).json({ msg: 'Internal Server Error' });
+                                } else {
+                                    return res.status(201).json(data);
+                                }                
+                            });
+                        });    
+                }
+              });
     })
 
     userProfileRouter.route('/:userId')    
@@ -31,15 +49,18 @@ module.exports = function(wagner, config, messages) {
         return function(req,res) {
             
                 
-                return UserProfile.findOne({userId: req.params.userId}, function(err,data) {
-                    if(err) {
-                        return res.status(500).json({ msg: 'Internal Server Error' });
-                    } else {
-                        return res.status(200).json(data!=null ? data : {});
-                    }                
-                });
+                return UserProfile.findOne({userId: req.params.userId}).
+                    populate('skills').
+                    populate('avatar').
+                    exec(function(err,data) {
+                        if(err) {
+                            return res.status(500).json({ msg: 'Internal Server Error' });
+                        } else {
+                            return res.status(200).json(data!=null ? data : {});
+                        }                
+                    });
 
-            
+                
         };
 
     }));

@@ -19,8 +19,19 @@ var userProfileSchema = {
       default: 0
     },
     avatar: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Avatar',
       required: true
+    },
+    skills: {
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Skill'
+        }]
+    },
+    bio: {
+      type: String,
+      required: false
     },
     jiraUser: {
       type: String,
