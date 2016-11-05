@@ -103,8 +103,7 @@ module.exports = function(wagner, config, messages) {
                 return res.status(401).send(messages.unauthorized_error);
             } else {
 
-              return wagner.invoke(function(User) {
-
+              
                 var bodyReq = req.body;     
 
                 if(!bodyReq || !_.has(bodyReq,'name') || !_.has(bodyReq,'description')) {
@@ -121,7 +120,7 @@ module.exports = function(wagner, config, messages) {
                             });
                         });    
                 }
-              });
+              
                 
             }
     })
@@ -140,6 +139,29 @@ module.exports = function(wagner, config, messages) {
     });
     
     skillRouter.route('/:id')    
+    
+    .put(jwtM({secret: config.jwtPassword}), wagner.invoke(function(Skill) {
+        
+        return function(req,res) {
+            
+            var userR = req.user.role;
+            if (userR!='admin') {
+                return res.status(401).send(messages.unauthorized_error);
+            } else {
+                
+                return Skill.update({_id: req.params.id}, req.body, {}, function(err,data) {
+                    if(err) {
+                        return res.status(500).json({ msg: 'Internal Server Error' });
+                    } else {
+                        return res.status(201).json(data);
+                    }                
+                });
+
+            }
+
+        };
+
+    }))
     
     .delete(jwtM({secret: config.jwtPassword}), wagner.invoke(function(Skill) {
         
