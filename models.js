@@ -14,12 +14,15 @@ module.exports = function(wagner, config) {
       mongoose.model('UserProfile', require('./schemas/user_profile'), 'user_profile');
   var Skill =
       mongoose.model('Skill', require('./schemas/skill'), 'skills');
+  var Level =
+      mongoose.model('Level', require('./schemas/level'), 'levels');
   
   var models = {
     User: User,
     Avatar: Avatar,
     UserProfile: UserProfile,
-    Skill: Skill
+    Skill: Skill,
+    Level: Level
   };
 
 
