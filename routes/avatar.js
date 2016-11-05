@@ -95,10 +95,8 @@ module.exports = function(wagner, config, messages) {
     ////
     // Get Avatars
     ////
-    .get(function(req, res) {
+    .get(jwtM({secret: config.jwtPassword}),function(req, res) {
         
-        console.log("Hola");
-    
         return wagner.invoke(function(Avatar) {
             Avatar.
             find().
