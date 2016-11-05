@@ -10,7 +10,8 @@ var userProfileSchema = {
     },
     level: {
       type: Number,
-      required: true
+      required: true,
+      default: 0
     },
     points: {
       type: Number,
@@ -20,12 +21,24 @@ var userProfileSchema = {
     avatar: {
       type: String,
       required: true
+    },
+    jiraUser: {
+      type: String,
+      required: false
+    },
+    gitlabUser: {
+      type: String,
+      required: false
+    },
+    jenkinsUser: {
+      type: String,
+      required: false
     }
 };
 
 var schema = new mongoose.Schema(userProfileSchema, {timestamps: true});
 
-schema.index({ name: 'username' });
+schema.index({ name: 'userId' });
 
 module.exports = schema;
 module.exports.userProfileSchema = userProfileSchema;
