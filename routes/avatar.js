@@ -25,8 +25,8 @@ module.exports = function(wagner, config, messages) {
     .post(jwtM({secret: config.jwtPassword}), 
         busboy({
            limits: {
-             fields: 3, // max 10 non-multipart fields
-             parts: 1, // max 10 multipart fields
+             fields: 10, // max 10 non-multipart fields
+             parts: 10, // max 10 multipart fields
              fileSize: 8 * 1000 * 1000 // files can be at most 8MB each
            }
         }),
@@ -34,7 +34,7 @@ module.exports = function(wagner, config, messages) {
            name: {
              required: true
            },
-           image: {
+           avatarImage: {
              filename: true, // use temporary file
              required: true,
              maxSize: {
@@ -44,6 +44,7 @@ module.exports = function(wagner, config, messages) {
            }
         }),
         function(err, req, res, next) {
+        
            if (!err || (err && err.key))
              next(); // no error or validation-related error
            else
@@ -52,18 +53,23 @@ module.exports = function(wagner, config, messages) {
         function(req, res, next) {
         
            if (req.form.error) {
+             console.log(req.form.error);
              return res.status(400).send('Se ha producido un error en la subida');
            }
         
+            
             var bodyReq = req.body;
             var userR = req.user;
             if (!userR || userR.role!='admin') {
                 return res.status(401).send(messages.unauthorized_error);
             } else {
 
+                
                 //Move image to avatars folder
-                var avatarFile = req.form.data.image;
+                var avatarFile = req.form.data.avatarImage;
+                
                 var filesDirPath = '/public/avatars/';
+                var destName = req.form.data.name + ".jpg";
 
                 //Creo directorio si no existe
                 try {
@@ -73,13 +79,13 @@ module.exports = function(wagner, config, messages) {
                 }
 
                     
-                fs.rename(avatarFile.filename, "." + filesDirPath + '/' + avatarFile.filename, function(err2,data2) {
+                fs.rename(avatarFile.filename, "." + filesDirPath + '/' + destName, function(err2,data2) {
                     if(err2) {
                         return res.status(500).send('Se ha producido un error en la subida');
                     } else {
                 
                         return wagner.invoke(function(Avatar) {
-                            return Avatar.create({'name': req.form.data.name, 'image': avatarFile.filename}, function(err,data) {
+                            return Avatar.create({'name': req.form.data.name, 'image': destName}, function(err,data) {
                                 if(err) {
                                     return res.status(500).json({ msg: 'Internal Server Error' });
                                 } else {
