@@ -8,8 +8,6 @@ module.exports = function(wagner, config) {
 
   var User =
       mongoose.model('User', require('./schemas/user'), 'users');
-  var Avatar =
-      mongoose.model('Avatar', require('./schemas/avatar'), 'avatars');
   var UserProfile =
       mongoose.model('UserProfile', require('./schemas/user_profile'), 'user_profile');
   var Skill =
@@ -19,7 +17,6 @@ module.exports = function(wagner, config) {
   
   var models = {
     User: User,
-    Avatar: Avatar,
     UserProfile: UserProfile,
     Skill: Skill,
     Level: Level
