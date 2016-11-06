@@ -62,19 +62,20 @@ app.use("/skill", express.static(path.join(__dirname, 'public/skills')));
 //Routes
 var indexRouter = require('./routes/index')(wagner,configParams,messages);
 var userRouter = require('./routes/user')(wagner,configParams,messages);
-var avatarRouter = require('./routes/avatar')(wagner,configParams,messages);
 var userProfileRouter = require('./routes/user_profile')(wagner,configParams,messages);
-var jiraWebHookRouter = require('./routes/jira_wh')(wagner,configParams,messages);
 var skillRouter = require('./routes/skill')(wagner,configParams,messages);
 var levelRouter = require('./routes/level')(wagner,configParams,messages);
 
+var jiraWebHookRouter = require('./routes/jira_wh')(wagner,configParams,messages);
+
+
 app.use(configParams.base_api_url + '/', indexRouter);
 app.use(configParams.base_api_url + '/user', userRouter);
-app.use(configParams.base_api_url + '/avatar', avatarRouter);
 app.use(configParams.base_api_url + '/userprofile', userProfileRouter);
-app.use(configParams.base_api_url + '/jiraWH', jiraWebHookRouter);
 app.use(configParams.base_api_url + '/skill', skillRouter);
 app.use(configParams.base_api_url + '/level', levelRouter);
+
+app.use(configParams.base_api_url + '/jiraWH', jiraWebHookRouter);
 
 
 /**
